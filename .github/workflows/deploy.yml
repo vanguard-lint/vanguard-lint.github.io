@@ -29,6 +29,17 @@ jobs:
           repository: vanguard-lint/vanguard-spec
           ref: main
           sparse-checkout: website
+      # The blog (website/blog/) is a Hugo site — render it the same way the
+      # vanguard-spec pages workflow does before uploading the artifact.
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.169.0'
+      - name: Build blog
+        run: |
+          hugo --gc --source website/blog --destination "${{ runner.temp }}/blog-render"
+          rm -rf website/blog
+          mkdir website/blog
+          cp -a "${{ runner.temp }}/blog-render/." website/blog/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
